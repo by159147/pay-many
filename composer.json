@@ -2,13 +2,14 @@
     "name": "faed/pay",
     "description": "基于laravel多通道支付服务",
     "license": "MIT",
+    "minimum-stability": "dev",
     "authors": [
         {
             "name": "faed",
             "email": "327399770@qq.com"
         }
     ],
-    "minimum-stability": "dev",
+
     "require": {
         "laravel/framework": "^7.0"
     },
