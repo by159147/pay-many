@@ -17,5 +17,12 @@
         "psr-4": {
             "Faed\\Pay\\": "src/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Faed\\Pay\\PayServiceProvider"
+            ]
+        }
     }
 }
