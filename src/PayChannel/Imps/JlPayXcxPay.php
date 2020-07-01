@@ -29,7 +29,9 @@ class JlPayXcxPay implements PayChannel
         }
         $this->merPriKey = $payConfig['merPriKey'];
 
+        //请求前的hook
         JlPayXcxBeforeHook::handle($parameter);
+        //发起请求
         $response = $this->request('https://qrcode.jlpay.com/api/pay/officialpay',$parameter);
 
         $adapter = new JlPayXcxChannelAdapter();
