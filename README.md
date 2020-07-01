@@ -7,6 +7,26 @@ composer require faed/pay
 ```shell script
 php artisan vendor:publish
 ```
-test
-test
+配置文件
+```php
+return [
+
+    //通道
+    'passageway'=>[
+        'JlPayXcxPay'=>[
+            //机构号
+            'org_code'=> '',
+            //商户号
+            'mch_id'=>'',
+            //私钥
+            'merPriKey'=>'',
+            //公钥
+            'JlPubKey'=> '',
+            //回调地址
+            'notify_url'=>'',
+        ],
+    ]
+];
+
+```
 
