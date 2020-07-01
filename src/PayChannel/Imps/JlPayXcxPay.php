@@ -4,10 +4,12 @@
 namespace Faed\Pay\PayChannel\Imps;
 use Faed\Pay\Adapter\JlPayXcxChannelAdapter;
 use Faed\Pay\Hooks\JlPayXcxBeforeHook;
+use Faed\Pay\Hooks\JlPayXcxNoticeHook;
 use Faed\Pay\Models\PayRequest;
 use Faed\Pay\PayChannel\PayChannel;
 use Faed\Pay\Sdk\JLSDK\SignUtils;
 use GuzzleHttp\Client;
+use Yansongda\Pay\Pay;
 
 class JlPayXcxPay implements PayChannel
 {
@@ -59,6 +61,9 @@ class JlPayXcxPay implements PayChannel
         if (PayRequest::where('order_number',$parameter['out_trade_no'])->where('is_notice',2)->value('id')){
             throw new \Exception('该订单已经回调');
         }
+
+        JlPayXcxNoticeHook::handle($parameter);
+
         return true;
     }
 
