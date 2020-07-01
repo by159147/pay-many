@@ -35,6 +35,8 @@ class JlPayXcxPay implements PayChannel
         $response = $this->request('https://qrcode.jlpay.com/api/pay/officialpay',$parameter);
 
         $adapter = new JlPayXcxChannelAdapter();
+
+
         return $adapter->pay($response);
     }
 
