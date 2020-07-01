@@ -26,6 +26,7 @@ class CreatePayRequestsTable extends Migration
             $table->string('notify_url')->comment('支付结果通知地址');
             $table->string('return_url')->nullable()->comment('网页跳转地址');
             $table->string('show_url')->nullable()->comment('订单展示页面');
+            $table->string('is_notice')->default(1)->comment('是否通知 1未通知 2已通知');
             $table->string('user')->comment('用户标识');
             $table->timestamps();
         });
