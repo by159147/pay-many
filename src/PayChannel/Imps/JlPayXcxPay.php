@@ -36,7 +36,6 @@ class JlPayXcxPay implements PayChannel
 
         $adapter = new JlPayXcxChannelAdapter();
 
-
         return $adapter->pay($response);
     }
 
