@@ -7,3 +7,6 @@ composer require faed/pay
 ```shell script
 php artisan vendor:publish
 ```
+test
+test
+
