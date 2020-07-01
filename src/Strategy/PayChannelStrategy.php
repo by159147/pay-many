@@ -39,4 +39,9 @@ class PayChannelStrategy
     {
         return $this->passageway->unifiedOrder($this->payConfig,$parameter);
     }
+
+    public function parsePayNotify($parameter)
+    {
+        return $this->passageway->parsePayNotify($this->payConfig,$parameter);
+    }
 }

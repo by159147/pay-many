@@ -26,6 +26,16 @@ class SignUtils
     }
 
 
+    public static function verify($params,$jlPubKey) {
+        if (!isset($params['sign'])) {
+            throw new \Exception("没有sign签名参数");
+        }
+        $sign = $params['sign'];
+        unset($params['sign']);
+        $dataStr = self::getJsonStr($params);
+        return RSA::rsaCheck($dataStr, $jlPubKey, $sign);
+    }
+
 
     /**
      * @param $params

@@ -1,9 +1,10 @@
-<?php
+<?php /** @noinspection ALL */
 
 
 namespace Faed\Pay\PayChannel\Imps;
 use Faed\Pay\Adapter\JlPayXcxChannelAdapter;
 use Faed\Pay\Hooks\JlPayXcxBeforeHook;
+use Faed\Pay\Models\PayRequest;
 use Faed\Pay\PayChannel\PayChannel;
 use Faed\Pay\Sdk\JLSDK\SignUtils;
 use GuzzleHttp\Client;
@@ -42,10 +43,25 @@ class JlPayXcxPay implements PayChannel
         return $adapter->pay($response);
     }
 
-    public function parsePayNotify()
+    /**
+     * @param $payConfig
+     * @param $parameter
+     * @return mixed|void
+     * @throws \Exception
+     */
+    public function parsePayNotify($payConfig, $parameter)
     {
-        // TODO: Implement parsePayNotify() method.
+        $result = SignUtils::verify($parameter,$payConfig['jlPubKey']);
+        if (!$result){
+            throw new \Exception('签名验证失败');
+        }
+        //订单号
+        if (PayRequest::where('order_number',$parameter['out_trade_no'])->where('is_notice',2)->value('id')){
+            throw new \Exception('该订单已经回调');
+        }
+        return true;
     }
+
 
     public function orderQuery()
     {
@@ -89,4 +105,5 @@ class JlPayXcxPay implements PayChannel
 
         return $response;
     }
+
 }

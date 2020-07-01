@@ -11,7 +11,7 @@ return [
             //私钥
             'merPriKey'=>'',
             //公钥
-            'JlPubKey'=> '',
+            'jlPubKey'=> '',
             //回调地址
             'notify_url'=>'',
         ],

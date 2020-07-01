@@ -19,9 +19,11 @@ interface PayChannel
 
     /**
      * 处理回调
+     * @param $payConfig
+     * @param $parameter
      * @return mixed
      */
-    public function parsePayNotify();
+    public function parsePayNotify($payConfig,$parameter);
 
     /**
      * 订单查询
