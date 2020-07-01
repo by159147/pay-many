@@ -20,12 +20,12 @@ class JlPayXcxBeforeHook
             'pay_platform'=>'嘉联支付',
             'pay_type'=>'微信小程序',
             'app_name'=>request()->input('app_name'),
-            'order_number'=>$parameter['out_trade_no'],
-            'goods_name'=>$parameter['body'],
-            'order_desc'=>$parameter['attach'],
-            'total_amount'=>$parameter['total_fee'],
-            'notify_url'=>$parameter['notify_url'],
-            'user'=>$parameter['open_id'],
+            'order_number'=>@$parameter['out_trade_no'],
+            'goods_name'=>@$parameter['body'],
+            'order_desc'=>@$parameter['attach'],
+            'total_amount'=>@$parameter['total_fee'],
+            'notify_url'=>@$parameter['notify_url'],
+            'user'=>@$parameter['open_id'],
         ]);
         $pay->payInfo()->saveMany([new PayInfoRequest(['content'=>$parameter])]);
     }

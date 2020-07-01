@@ -31,6 +31,9 @@ class JlPayXcxPay implements PayChannel
 
         //请求前的hook
         JlPayXcxBeforeHook::handle($parameter);
+
+        //使用配置回调地址
+        $parameter['notify_url'] = $payConfig['notify_url'];
         //发起请求
         $response = $this->request('https://qrcode.jlpay.com/api/pay/officialpay',$parameter);
 
