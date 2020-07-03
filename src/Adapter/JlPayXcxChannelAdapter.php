@@ -4,6 +4,8 @@
 namespace Faed\Pay\Adapter;
 
 
+use Illuminate\Support\Facades\Log;
+
 class JlPayXcxChannelAdapter
 {
     /**
@@ -13,6 +15,10 @@ class JlPayXcxChannelAdapter
      */
     public function pay($response)
     {
+        if (config('wx.debug')){
+            Log::debug('支付请求返回的所有数据:',$response);
+        }
+
         //调取失败
         if ($response['ret_code'] !== '00'){
             throw new \Exception("{$response['ret_msg']}");

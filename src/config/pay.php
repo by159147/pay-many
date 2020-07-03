@@ -1,6 +1,9 @@
 <?php
 return [
 
+    //debug
+    'debug' =>false,
+
     //通道
     'passageway'=>[
         'JlPayXcxPay'=>[
