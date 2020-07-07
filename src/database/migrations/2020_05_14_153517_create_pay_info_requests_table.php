@@ -16,7 +16,7 @@ class CreatePayInfoRequestsTable extends Migration
         Schema::create('pay_info_requests', function (Blueprint $table) {
             $table->id();
             $table->integer('pay_request_id')->comment('支付请求表id');
-            $table->json('content')->comment('支付信息详细');
+            $table->text('content')->comment('支付信息详细');
             $table->timestamps();
         });
     }

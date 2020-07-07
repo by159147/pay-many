@@ -10,39 +10,47 @@ namespace Faed\Pay\PayChannel;
 interface PayChannel
 {
     /**
+     * 接授配置
+     * PayChannel constructor.
+     * @param $config
+     */
+    public function __construct($config);
+
+    /**
      * 统一下单入口
-     * @param array $payConfig 配置
      * @param array $parameter 支付参数
      * @return mixed
      */
-    public function unifiedOrder($payConfig,$parameter);
+    public function unifiedOrder($parameter);
 
     /**
      * 处理回调
-     * @param $payConfig
      * @param $parameter
      * @return mixed
      */
-    public function parsePayNotify($payConfig,$parameter);
+    public function parsePayNotify($parameter);
 
     /**
      * 订单查询
+     * @param $parameter
      * @return mixed
      */
-    public function orderQuery();
+    public function orderQuery($parameter);
 
 
     /**
      * 订单关闭
+     * @param $parameter
      * @return mixed
      */
-    public function closeOrder();
+    public function closeOrder($parameter);
 
     /**
      * 退款
+     * @param $parameter
      * @return mixed
      */
-    public function refund();
+    public function refund($parameter);
 
     /**
      * 退款查询

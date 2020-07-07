@@ -2,6 +2,10 @@
 
 
 namespace Faed\Pay\Strategy;
+use Faed\Pay\Hooks\JlPayXcxHook;
+use Faed\Pay\Hooks\JlPayXcxNoticeHook;
+use Faed\Pay\Hooks\JlPayXcxQueryHook;
+use Faed\Pay\Hooks\JlPayXcxRefundHook;
 use Faed\Pay\PayChannel\PayChannel;
 use Faed\Pay\PayChannel\PayChannelFactory;
 
@@ -17,11 +21,6 @@ class PayChannelStrategy
      */
     public $passageway;
 
-    /**
-     * 支付配置
-     * @var
-     */
-    public $payConfig;
 
     /**
      * Pay constructor.
@@ -30,18 +29,57 @@ class PayChannelStrategy
      */
     public function __construct($payname)
     {
-        $this->passageway = PayChannelFactory::getInterface($payname);
-
-        $this->payConfig = config("pay.passageway.{$payname}");
+        $this->passageway = PayChannelFactory::getInterface($payname,config("pay.passageway.{$payname}"));
     }
 
-    public function unifiedOrder($parameter)
+    /**
+     * @param $parameter 支付参数
+     * @param array $decorator
+     * @return mixed
+     */
+    public function unifiedOrder($parameter,$decorator = [])
     {
-        return $this->passageway->unifiedOrder($this->payConfig,$parameter);
+        $this->passageway->addDecorator(new JlPayXcxHook());
+
+        foreach ($decorator as $value){
+            $this->passageway->addDecorator(new $value);
+        }
+
+        return $this->passageway->unifiedOrder((array)$parameter);
     }
 
-    public function parsePayNotify($parameter)
+    public function parsePayNotify($parameter,$decorator = [])
     {
-        return $this->passageway->parsePayNotify($this->payConfig,$parameter);
+        $this->passageway->addDecorator(new JlPayXcxNoticeHook());
+
+        foreach ($decorator as $value){
+            $this->passageway->addDecorator(new $value);
+        }
+
+        return $this->passageway->parsePayNotify($parameter);
+    }
+
+
+    public function orderQuery($parameter,$decorator = [])
+    {
+        $this->passageway->addDecorator(new JlPayXcxQueryHook());
+
+        foreach ($decorator as $value){
+            $this->passageway->addDecorator(new $value);
+        }
+
+        return $this->passageway->orderQuery($parameter);
+    }
+
+
+    public function refund($parameter,$decorator = [])
+    {
+        $this->passageway->addDecorator(new JlPayXcxRefundHook());
+
+        foreach ($decorator as $value){
+            $this->passageway->addDecorator(new $value);
+        }
+
+        return $this->passageway->refund($parameter);
     }
 }

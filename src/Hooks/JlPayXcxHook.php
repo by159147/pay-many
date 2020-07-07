@@ -6,15 +6,17 @@ namespace Faed\Pay\Hooks;
 
 use Faed\Pay\Models\PayInfoRequest;
 use Faed\Pay\Models\PayRequest;
+use Faed\Pay\Models\PayResponse;
 
 /**
  * 支付请求前钩子
  * @package Faed\Pay\Hooks
  */
-class JlPayXcxBeforeHook
+class JlPayXcxHook implements Decorator
 {
-    public  static function handle($parameter)
+    public function before($parameter)
     {
+
         $pay = PayRequest::create([
             'pay_tag'=>'JlPayXcxPay',
             'pay_platform'=>'嘉联支付',
@@ -27,6 +29,21 @@ class JlPayXcxBeforeHook
             'notify_url'=>@$parameter['notify_url'],
             'user'=>@$parameter['open_id'],
         ]);
+
         $pay->payInfo()->saveMany([new PayInfoRequest(['content'=>$parameter])]);
+
+    }
+
+
+    public function after($response)
+    {
+        PayResponse::create([
+            'order_number'=>$response['out_trade_no'],
+            'target_order_id'=>$response['transaction_id'],
+            'content'=>$response,
+        ]);
+
+        //下单成功更新订单
+        PayRequest::where('order_number',$response['out_trade_no'])->update(['status'=>1,'target_order_id'=>$response['transaction_id']]);
     }
 }

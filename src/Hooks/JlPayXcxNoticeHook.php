@@ -6,10 +6,26 @@ namespace Faed\Pay\Hooks;
 
 use Faed\Pay\Models\PayInfoNotice;
 use Faed\Pay\Models\PayNotice;
+use Illuminate\Support\Facades\Log;
 
-class JlPayXcxNoticeHook
+class JlPayXcxNoticeHook implements Decorator
 {
-    public static function handle($parameter)
+
+
+    /**
+     * 验签前的处理
+     * @param $parameter
+     */
+    public function before($parameter)
+    {
+        Log::alert('嘉联-小程序支付-回调验证签名之前',$parameter);
+    }
+
+    /**
+     * 验签后处理
+     * @param $parameter
+     */
+    public function after($parameter)
     {
         $pay = PayNotice::create([
             'pay_time'=>$parameter['trans_time'],
