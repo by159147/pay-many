@@ -19,6 +19,7 @@ class CreatePayRequestsTable extends Migration
             $table->string('pay_platform')->comment('支付平台');
             $table->string('pay_type')->comment('支付类型');
             $table->string('app_name')->comment('应用名称');
+            $table->string('mid')->nullable()->comment('商户号');
             $table->string('order_number')->comment('订单号');
             $table->string('target_order_id')->nullable()->comment('第三方订单号');
             $table->string('goods_name')->comment('商品名称');
