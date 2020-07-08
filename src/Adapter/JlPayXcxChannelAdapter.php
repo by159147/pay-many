@@ -21,6 +21,7 @@ class JlPayXcxChannelAdapter
 
     /**
      * @param $response
+     * @return array
      * @throws \Exception
      */
     public static function refund($response)
@@ -31,10 +32,21 @@ class JlPayXcxChannelAdapter
         return ['target_order_id'=>$response['transaction_id'],'order_number'=>$response['out_trade_no'],'total_amount'=>$response['total_fee'],'pay_time'=>$response['trans_time']];
     }
 
-
-    public static function close()
+    /**
+     * @param $response
+     * @return array
+     * @throws \Exception
+     */
+    public static function close($response)
     {
+        self::verificationHttp($response);
+        self::verificationStatus($response);
 
+        return [
+            'target_order_id'=>$response['transaction_id'],
+            'order_number'=>$response['out_trade_no'],
+            'pay_time'=>$response['trans_time']
+        ];
     }
 
 
@@ -51,6 +63,7 @@ class JlPayXcxChannelAdapter
     }
 
     /**
+     * 验证请求是否成功
      * @param $response
      * @throws \Exception
      */

@@ -18,14 +18,15 @@ class JlPayXcxRefundHook implements Decorator
             'ori_order_number'=>@$parameter['ori_out_trade_no'],
             'ori_target_order_id'=>$parameter['ori_transaction_id'],
             'total_amount'=>$parameter['total_fee'],
-            'user'=>$parameter['user'],
+            'user'=> @$parameter['user'],
+            'platform_refund'=> @$parameter['platform_refund'],
             'content_request'=>collect($parameter)->except('user')->toArray(),
         ]);
     }
 
     public function after($response)
     {
-        $payRefund = PayRefund::updateorcreate(['order_number'=>$response['out_trade_no']],['content_response'=>$response,'target_order_id'=>$response['transaction_id']]);
+        $payRefund = PayRefund::updateorcreate(['order_number'=>$response['out_trade_no']],['content_response'=>$response,'target_order_id'=>$response['transaction_id'],'status'=>2]);
 
         //退款成功
         PayRequest::where('target_order_id',$payRefund->ori_target_order_id)->update(['status'=>5]);

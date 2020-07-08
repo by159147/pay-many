@@ -21,7 +21,7 @@ class JlPayXcxHook implements Decorator
             'pay_tag'=>'JlPayXcxPay',
             'pay_platform'=>'嘉联支付',
             'pay_type'=>'微信小程序',
-            'app_name'=>request()->input('app_name'),
+            'app_name'=>$parameter['app_name'],
             'order_number'=>@$parameter['out_trade_no'],
             'goods_name'=>@$parameter['body'],
             'order_desc'=>@$parameter['attach'],

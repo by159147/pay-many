@@ -2,6 +2,7 @@
 
 
 namespace Faed\Pay\Strategy;
+use Faed\Pay\Hooks\JlPayXcxCloseHook;
 use Faed\Pay\Hooks\JlPayXcxHook;
 use Faed\Pay\Hooks\JlPayXcxNoticeHook;
 use Faed\Pay\Hooks\JlPayXcxQueryHook;
@@ -48,6 +49,12 @@ class PayChannelStrategy
         return $this->passageway->unifiedOrder((array)$parameter);
     }
 
+    /**
+     * 回调
+     * @param $parameter
+     * @param array $decorator
+     * @return mixed
+     */
     public function parsePayNotify($parameter,$decorator = [])
     {
         $this->passageway->addDecorator(new JlPayXcxNoticeHook());
@@ -60,6 +67,12 @@ class PayChannelStrategy
     }
 
 
+    /**
+     * 查询
+     * @param $parameter
+     * @param array $decorator
+     * @return mixed
+     */
     public function orderQuery($parameter,$decorator = [])
     {
         $this->passageway->addDecorator(new JlPayXcxQueryHook());
@@ -71,7 +84,12 @@ class PayChannelStrategy
         return $this->passageway->orderQuery($parameter);
     }
 
-
+    /**
+     * 退款
+     * @param $parameter
+     * @param array $decorator
+     * @return mixed
+     */
     public function refund($parameter,$decorator = [])
     {
         $this->passageway->addDecorator(new JlPayXcxRefundHook());
@@ -82,4 +100,24 @@ class PayChannelStrategy
 
         return $this->passageway->refund($parameter);
     }
+
+    /**
+     * 关闭订单
+     * @param $parameter
+     * @param array $decorator
+     * @return mixed
+     */
+    public function closeOrder($parameter,$decorator = [])
+    {
+        $this->passageway->addDecorator(new JlPayXcxCloseHook());
+
+        foreach ($decorator as $value){
+            $this->passageway->addDecorator(new $value);
+        }
+
+        return $this->passageway->closeOrder($parameter);
+    }
+
+
+
 }

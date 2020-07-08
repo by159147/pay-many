@@ -54,9 +54,10 @@ interface PayChannel
 
     /**
      * 退款查询
+     * @param $parameter
      * @return mixed
      */
-    public function refundQuery();
+    public function refundQuery($parameter);
 
     /**
      * 处理请求
@@ -66,4 +67,10 @@ interface PayChannel
      */
     public function request($url,$parameter);
 
+    /**
+     * 添加参数
+     * @param $parameter
+     * @return mixed
+     */
+    public function addPayData($parameter);
 }

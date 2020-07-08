@@ -34,11 +34,7 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
     public function unifiedOrder($parameter)
     {
         //添加参数
-        $parameter['org_code'] = $this->config['org_code'];
-        //未传递 商户号 读取配置商户号
-        if (empty($parameter['mch_id'])){
-            $parameter['mch_id'] = $this->config['mch_id'];
-        }
+        $parameter = $this->addPayData($parameter);
 
 
         //请求前的hook
@@ -65,10 +61,8 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
     {
         $this->before($parameter);
 
-        $result = SignUtils::verify($parameter,$this->config['jlPubKey']);
-        if (!$result){
-            throw new \Exception('签名验证失败');
-        }
+        $parameter = $this->verification($parameter);
+
         //订单号
         if (PayRequest::where('order_number',$parameter['out_trade_no'])->where('is_notice',2)->value('id')){
             throw new \Exception('该订单已经回调');
@@ -87,11 +81,7 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
     public function orderQuery($parameter)
     {
         //添加参数
-        $parameter['org_code'] = $this->config['org_code'];
-        //未传递 商户号 读取配置商户号
-        if (empty($parameter['mch_id'])){
-            $parameter['mch_id'] = $this->config['mch_id'];
-        }
+        $parameter = $this->addPayData($parameter);
 
 
         $this->before($parameter);
@@ -105,9 +95,24 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
 
     }
 
+    /**
+     * @param $parameter
+     * @return array|mixed
+     * @throws \Exception
+     */
     public function closeOrder($parameter)
     {
-        // TODO: Implement closeOrder() method.
+        //添加参数
+        $parameter = $this->addPayData($parameter);
+
+        $this->before($parameter);
+
+        $response = $this->request('https://qrcode.jlpay.com/api/pay/cancel',collect($parameter)->except('user')->toArray());
+        $close = JlPayXcxChannelAdapter::close($response);
+
+        $this->after($response);
+
+        return $close;
     }
 
     /**
@@ -118,14 +123,10 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
     public function refund($parameter)
     {
         //添加参数
-        $parameter['org_code'] = $this->config['org_code'];
-        //未传递 商户号 读取配置商户号
-        if (empty($parameter['mch_id'])){
-            $parameter['mch_id'] = $this->config['mch_id'];
-        }
+        $parameter = $this->addPayData($parameter);
 
         $this->before($parameter);
-        $response = $this->request('https://qrcode.jlpay.com/api/pay/refund',collect($parameter)->except('user')->toArray());
+        $response = $this->request('https://qrcode.jlpay.com/api/pay/refund',$parameter);
         $refund = JlPayXcxChannelAdapter::refund($response);
 
         $this->after($response);
@@ -133,11 +134,30 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
         return $refund;
     }
 
-    public function refundQuery()
+    /**
+     * 退款查询展示不支持
+     * @param $parameter
+     * @return mixed|void
+     */
+    public function refundQuery($parameter)
     {
         // TODO: Implement refundQuery() method.
     }
 
+    /**
+     * 添加参数 商户号等......
+     * @param $parameter
+     * @return mixed|void
+     */
+    public function addPayData($parameter)
+    {
+        $parameter['org_code'] = $this->config['org_code'];
+        //未传递 商户号 读取配置商户号
+        if (empty($parameter['mch_id'])){
+            $parameter['mch_id'] = $this->config['mch_id'];
+        }
+        return $parameter;
+    }
 
     /**
      * @param $url
