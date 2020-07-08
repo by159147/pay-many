@@ -71,7 +71,7 @@ class JlPayXcxChannelAdapter
     {
         //调取失败
         if ($response['ret_code'] !== '00'){
-            throw new \Exception("{$response['ret_msg']} 平台订单号：");
+            throw new \Exception("{$response['ret_msg']}");
         }
     }
 
