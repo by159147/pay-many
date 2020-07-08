@@ -29,6 +29,7 @@ class JlPayXcxRefundHook implements Decorator
 
         //退款成功
         PayRequest::where('target_order_id',$payRefund->ori_target_order_id)->update(['status'=>5]);
+        PayRequest::where('target_order_id',$payRefund->ori_target_order_id)->increment('refund_total_amount',$payRefund->total_amount);
 
     }
 }
