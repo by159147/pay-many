@@ -9,7 +9,7 @@ use Faed\Pay\Hooks\JlPayXcxQueryHook;
 use Faed\Pay\Hooks\JlPayXcxRefundHook;
 use Faed\Pay\PayChannel\PayChannel;
 use Faed\Pay\PayChannel\PayChannelFactory;
-
+use Exception;
 /**
  * 策略
  * @package Faed\Pay\Strategy
@@ -118,6 +118,16 @@ class PayChannelStrategy
         return $this->passageway->closeOrder($parameter);
     }
 
-
-
+    /**
+     * @param $parameter
+     * @return mixed
+     * @throws Exception
+     */
+    public function authbind($parameter)
+    {
+        if (!method_exists($this->passageway,'authbind')){
+            throw new Exception('该方法不存在');
+        }
+        return $this->passageway->authbind($parameter);
+    }
 }

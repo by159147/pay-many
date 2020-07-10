@@ -62,6 +62,19 @@ class JlPayXcxChannelAdapter
         return ['target_order_id'=>$response['transaction_id'],'order_number'=>$response['out_trade_no'],'total_amount'=>$response['total_fee'],'status'=>$response['status'],'pay_time'=>$response['trans_time']];
     }
 
+
+    /**
+     * @param $response
+     * @return array
+     * @throws \Exception
+     */
+    public static function authbind($response)
+    {
+        self::verificationHttp($response);
+        return ['msg'=>$response['ret_msg']];
+    }
+
+
     /**
      * 验证请求是否成功
      * @param $response

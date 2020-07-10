@@ -11,7 +11,7 @@ use Faed\Pay\PayChannel\PayChannelAbstract;
 use Faed\Pay\Sdk\JLSDK\SignUtils;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
-
+use Exception;
 class JlPayXcxPay extends PayChannelAbstract implements PayChannel
 {
     public $config;
@@ -29,12 +29,12 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
     /**
      * @param array $parameter
      * @return mixed|void
-     * @throws \Exception
+     * @throws Exception
      */
     public function unifiedOrder($parameter)
     {
         //添加参数
-        $parameter = $this->addPayData($parameter);
+        $parameter = $this->addPayData($parameter,true);
 
 
         //请求前的hook
@@ -55,7 +55,7 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
     /**
      * @param $parameter
      * @return mixed|void
-     * @throws \Exception
+     * @throws Exception
      */
     public function parsePayNotify($parameter)
     {
@@ -65,7 +65,7 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
 
         //订单号
         if (PayRequest::where('order_number',$parameter['out_trade_no'])->where('is_notice',2)->value('id')){
-            throw new \Exception('该订单已经回调');
+            throw new Exception('该订单已经回调');
         }
 
         $this->after($parameter);
@@ -76,7 +76,7 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
     /**
      * @param $parameter
      * @return array|mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function orderQuery($parameter)
     {
@@ -98,7 +98,7 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
     /**
      * @param $parameter
      * @return array|mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function closeOrder($parameter)
     {
@@ -118,7 +118,7 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
     /**
      * @param $parameter
      * @return array|mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function refund($parameter)
     {
@@ -147,15 +147,21 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
     /**
      * 添加参数 商户号等......
      * @param $parameter
+     * @param bool $appid
      * @return mixed|void
      */
-    public function addPayData($parameter)
+    public function addPayData($parameter,$appid = false)
     {
         $parameter['org_code'] = $this->config['org_code'];
         //未传递 商户号 读取配置商户号
         if (empty($parameter['mch_id'])){
             $parameter['mch_id'] = $this->config['mch_id'];
         }
+
+        if ($appid){
+            $parameter['sub_appid'] = $this->config['appid'];
+        }
+
         return $parameter;
     }
 
@@ -163,7 +169,7 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
      * @param $url
      * @param $parameter
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function request($url, $parameter)
     {
@@ -172,7 +178,7 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
 
         Log::alert('嘉联-小程序-请求前参数',[
             'url' => $url,
-            'oreder_number'=>$parameter['out_trade_no'],
+            'oreder_number'=>@$parameter['out_trade_no'],
             'data'=>$parameter
         ]);
 
@@ -180,29 +186,44 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
         $response = $client->post($url,
             ['body' => json_encode($parameter, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)]
         );
-        $response =  $this->verification(json_decode($response->getBody()->getContents(),true));
+
+        $response = json_decode($response->getBody()->getContents(),true);
 
         Log::alert('嘉联-小程序-请求后返回',[
             'url' => $url,
-            'oreder_number'=>$parameter['out_trade_no'],
+            'oreder_number'=>@$parameter['out_trade_no'],
             'data'=>$response,
         ]);
 
+        $response =  $this->verification($response);
         return $response;
     }
 
     /**
      * @param $response
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function verification($response)
     {
         if (!SignUtils::verify($response,$this->config['JlPubKey'])){
-            throw new \Exception('签名验证失败');
+            throw new Exception('签名验证失败');
         }
         unset($response['sign']);
         return $response;
+    }
+
+    /**
+     * @param $parameter
+     * @return array
+     * @throws Exception
+     */
+    public function authbind($parameter)
+    {
+        //添加参数
+        $parameter = $this->addPayData($parameter,true);
+        $response = $this->request('https://qrcode.jlpay.com/api/pay/authbind',$parameter);
+        return JlPayXcxChannelAdapter::authbind($response);
     }
 
 

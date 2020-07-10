@@ -7,6 +7,7 @@ return [
     //通道
     'passageway'=>[
         'JlPayXcxPay'=>[
+            'appid'=>'',
             //机构号
             'org_code'=> '',
             //商户号
