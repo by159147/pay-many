@@ -34,7 +34,7 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
     public function unifiedOrder($parameter)
     {
         //添加参数
-        $parameter = $this->addPayData($parameter,true);
+        $parameter = $this->addPayData($parameter,true,$parameter['app_name']);
 
 
         //请求前的hook
@@ -81,7 +81,7 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
     public function orderQuery($parameter)
     {
         //添加参数
-        $parameter = $this->addPayData($parameter);
+        $parameter = $this->addPayData($parameter,false);
 
 
         $this->before($parameter);
@@ -103,7 +103,7 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
     public function closeOrder($parameter)
     {
         //添加参数
-        $parameter = $this->addPayData($parameter);
+        $parameter = $this->addPayData($parameter,false);
 
         $this->before($parameter);
 
@@ -123,7 +123,7 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
     public function refund($parameter)
     {
         //添加参数
-        $parameter = $this->addPayData($parameter);
+        $parameter = $this->addPayData($parameter,false);
 
         $this->before($parameter);
         $response = $this->request('https://qrcode.jlpay.com/api/pay/refund',$parameter);
@@ -148,9 +148,10 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
      * 添加参数 商户号等......
      * @param $parameter
      * @param bool $appid
+     * @param string $app_name
      * @return mixed|void
      */
-    public function addPayData($parameter,$appid = false)
+    public function addPayData($parameter,$appid = false,$app_name = '')
     {
         $parameter['org_code'] = $this->config['org_code'];
         //未传递 商户号 读取配置商户号
@@ -159,7 +160,7 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
         }
 
         if ($appid){
-            $parameter['sub_appid'] = $this->config['appid'];
+            $parameter['sub_appid'] = $this->config['appid'][$app_name];
         }
 
         return $parameter;
