@@ -123,7 +123,7 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
     public function refund($parameter)
     {
         //添加参数
-        $parameter = $this->addPayData($parameter,false);
+        $parameter = $this->addPayData($parameter,false,$parameter['app_name']);
 
         $this->before($parameter);
         $response = $this->request('https://qrcode.jlpay.com/api/pay/refund',$parameter);
@@ -222,7 +222,7 @@ class JlPayXcxPay extends PayChannelAbstract implements PayChannel
     public function authbind($parameter)
     {
         //添加参数
-        $parameter = $this->addPayData($parameter,true);
+        $parameter = $this->addPayData($parameter,true,$parameter['app_name']);
         $response = $this->request('https://qrcode.jlpay.com/api/pay/authbind',$parameter);
         return JlPayXcxChannelAdapter::authbind($response);
     }
